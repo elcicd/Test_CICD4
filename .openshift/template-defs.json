@@ -1,0 +1,100 @@
+{
+  "templates": [
+    {
+      "appName": "test-cicd4-instance1",
+      "templateName": "dc-svc-template",
+      "file": "dc-svc-template.yaml",
+      "patchFile": "kustomize.patch",
+      "params": {
+        "SVC_PORT": 8080,
+        "TOPIC_NAME": "instance1-topic"
+      },
+      "dev": {
+        "patchFile": "dev/kustomize-dev.patch",
+        "params": {
+          "SVC_PORT": 8081
+        }
+      },
+      "qa": {},
+      "prod": {}
+    },
+    {
+	  "appName": "test-cicd4-instance1",
+	  "file": "configmap-template.yaml",
+	  "params": {
+		 "TOPIC_NAME": "instance1-topic"
+	  },
+	  "dev": {
+		"params": {
+		  "TOPIC_NAME": "dev-instance1-topic"
+		}
+	  },
+	  "qa": {
+		"params": {
+		  "TOPIC_NAME": "qa-instance1-topic"
+		}
+	  },
+	  "prod": {
+		"params": {
+		  "TOPIC_NAME": "prod-instance1-topic"
+		}
+	  }
+    },
+    {
+      "appName": "test-cicd4-instance1",
+      "file": "hpa-template.yaml",
+      "default": {},
+      "dev": {},
+      "qa": {
+        "params": {
+          "CPU_PERCENTAGE": 50,
+          "MAX_REPLICAS": 2,
+	      "MIN_REPLICAS": 1
+        }
+      },
+      "prod": {
+        "params": {
+          "CPU_PERCENTAGE": 90,
+          "MAX_REPLICAS": 5,
+	      "MIN_REPLICAS": 2
+        }
+      }
+    },
+    {
+      "appName": "test-cicd4-instance2",
+      "templateName": "dc-svc-template",
+      "file": "dc-svc-template.yaml",
+      "params": {
+        "TOPIC_NAME": "instance2-topic",
+        "SVC_PORT": 8082
+      },
+      "dev": {
+        "patchFile": "dev/kustomize-instance2-dev.patch"
+      },
+      "qa": {},
+      "prod": {}
+    },
+      {
+      "appName": "test-cicd4-instance2",
+      "file": "configmap-template.yaml",
+      "params": {
+        "TOPIC_NAME": "instance2-topic"
+      },
+      "dev": {
+        "params": {
+          "TOPIC_NAME": "dev-instance2-topic"
+        }
+      },
+      "qa": {
+        "params": {
+          "TOPIC_NAME": "qa-instance2-topic"
+        }
+      },
+      "prod": {
+        "params": {
+          "TOPIC_NAME": "prod-instance2-topic"
+        }
+      }
+    }
+  ]
+}
