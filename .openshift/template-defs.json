@@ -1,8 +1,8 @@
 {
 	"templates": [{
 			"appName": "test-cicd4-instance1",
-			"templateName": "dc-svc-template",
-			"file": "dc-svc-template.yaml",
+			"templateName": "dc-svc-route-template",
+			"file": "dc-svc-route-template.yaml",
 			"patchFile": "kustomize.patch",
 			"params": {
 				"SVC_PORT": 8080,
@@ -61,8 +61,8 @@
 		},
 		{
 			"appName": "test-cicd4-instance2",
-			"templateName": "dc-svc-template",
-			"file": "dc-svc-template.yaml",
+			"templateName": "dc-svc-route-template",
+			"file": "dc-svc-route-template.yaml",
 			"params": {
 				"TOPIC_NAME": "instance2-topic",
 				"SVC_PORT": 8082
