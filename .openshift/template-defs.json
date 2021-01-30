@@ -14,7 +14,7 @@
 		},
 		{
 			"appName": "test-cicd4-instance1",
-			"templateName": "route-template"
+			"templateName": "route-template",
 			"params": {
 				"SVC_PORT": 8080
 			},
