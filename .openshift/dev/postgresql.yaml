@@ -62,13 +62,6 @@ spec:
         ports:
         - containerPort: 5432
           protocol: TCP
-        resources:
-          limits:
-            cpu: 400m
-            memory: 500Mi
-          requests:
-            cpu: 100m
-            memory: 50Mi
         readinessProbe:
           exec:
             command:
@@ -80,7 +73,11 @@ spec:
           timeoutSeconds: 1
         resources:
           limits:
+            cpu: 400m
             memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
         securityContext:
           capabilities: {}
           privileged: false
