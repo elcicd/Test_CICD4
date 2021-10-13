@@ -46,7 +46,7 @@ spec:
             secretKeyRef:
               key: database-name
               name: postgresql
-        image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql:10
+        image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql
         imagePullPolicy: IfNotPresent
         livenessProbe:
           exec:
