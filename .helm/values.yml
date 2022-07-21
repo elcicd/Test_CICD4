@@ -1,4 +1,4 @@
-templateVars:
+parameters:
   INSTANCE_1: instance1
   INSTANCE_2: instance2
   CPU_UTILIZATION: 90
@@ -9,11 +9,11 @@ templateVars:
   CGROUP: cgroup
   INSTANCE_2_PORT: 8082
   
-templateVars-qa:
+parameters-qa:
   CPU_UTILIZATION: 50
   MAX_REPLICAS: 2
   
-templateVars-prod:
+parameters-prod:
   MIN_REPLICAS: 2
   MAX_REPLICAS: 5
 
