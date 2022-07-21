@@ -6,6 +6,8 @@ templateVars:
   MAX_REPLICAS: 3
   TOPIC: topic
   TOPIC_NAME: topicname
+  CGROUP: cgroup
+  INSTANCE_2_PORT: 8082
   
 templateVars-qa:
   CPU_UTILIZATION: 50
@@ -30,18 +32,22 @@ templates:
     valueFrom:
       configMapKeyRef:
         key: ${TOPIC_NAME}
-        name: ${APP_NAME}-configmap
-  - name: cgroup
+        name: ${MICROSERVICE_NAME}-${INSTANCE_1}-configmap
+  - name: ${CGROUP}
     valueFrom:
       configMapKeyRef:
-        key: cgroup
-        name: ${APP_NAME}-configmap
+        key: ${CGROUP}
+        name: ${MICROSERVICE_NAME}-${INSTANCE_1}-configmap
+
 - templateName: ingress
   appName: ${MICROSERVICE_NAME}-${INSTANCE_1}
+
 - templateName: configMap
   appName: ${MICROSERVICE_NAME}-${INSTANCE_1}-configmap
   data:
+    ${CGROUP}: ${CGROUP}
     ${TOPIC_NAME}: ${SDLC_ENV}-${INSTANCE_1}-${TOPIC}
+
 - templateName: horizontalPodAutoscaler
   appName: ${MICROSERVICE_NAME}-${INSTANCE_1}
   maxReplicas: ${MAX_REPLICAS}
@@ -52,15 +58,18 @@ templates:
     target:
       type: Utilization
       averageUtilization: ${CPU_UTILIZATION}
+
 - templateName: deploymentService
   appName: ${MICROSERVICE_NAME}-${INSTANCE_2}
   env:
   - name: ${TOPIC_NAME}
     value: ${INSTANCE_2}-${TOPIC}
-  port: 8082
+  port: ${INSTANCE_2_PORT}
+
 - templateName: ingress
   appName: ${MICROSERVICE_NAME}-${INSTANCE_2}
-  port: 8082
+  port: ${INSTANCE_2_PORT}
+
 - templateName: configMap
   appName: ${MICROSERVICE_NAME}-${INSTANCE_2}-configmap
   file: configmap-template.yaml
