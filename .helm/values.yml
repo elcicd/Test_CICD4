@@ -72,7 +72,5 @@ templates:
 
 - templateName: configMap
   appName: ${MICROSERVICE_NAME}-${INSTANCE_2}-configmap
-  file: configmap-template.yaml
   data:
-  - name: ${TOPIC_NAME}
-    value: ${SDLC_ENV}-${INSTANCE_2}-${TOPIC}
+    ${TOPIC_NAME}: ${SDLC_ENV}-${INSTANCE_2}-${TOPIC}
