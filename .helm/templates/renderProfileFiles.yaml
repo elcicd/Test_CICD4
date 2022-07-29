@@ -1,8 +1,0 @@
-{{ $profiles := prepend $.Values.elCicdChart.profiles "default" }}
-{{- range $index, $profile := $profiles }}
-  {{- $profileFiles := printf "%s/*.{json,yaml,yml}" $profile }}
-  {{- range $path, $_ :=  $.Files.Glob  $profileFiles }}
----
-    {{ $.Files.Get $path }}
-  {{- end }}
-{{- end }}
