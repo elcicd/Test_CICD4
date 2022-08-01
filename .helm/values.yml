@@ -85,3 +85,63 @@ elCicdChart:
   - templateName: ingress
     appName: ${MICROSERVICE_NAME}-${INSTANCE_2}
     port: ${INSTANCE_2_PORT}
+    
+  - templateName: deploymentService
+    appName: postgresql
+    image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql
+    imagePullPolicy: IfNotPresent
+    port: 5432
+    dnsPolicy: ClusterFirst
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    terminationGracePeriodSeconds: 30
+    env:
+    - name: POSTGRESQL_USER
+      valueFrom:
+        secretKeyRef:
+          key: database-user
+          name: postgresql
+    - name: POSTGRESQL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: database-password
+          name: postgresql
+    - name: POSTGRESQL_DATABASE
+      valueFrom:
+        secretKeyRef:
+          key: database-name
+          name: postgresql
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/lib/pgsql/data
+      name: postgresql-data
+    livenessProbe:
+      exec:
+        command:
+        - /usr/libexec/check-container
+        - --live
+      failureThreshold: 3
+      initialDelaySeconds: 120
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 10
+    readinessProbe:
+      exec:
+        command:
+        - /usr/libexec/check-container
+      failureThreshold: 3
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: 400m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 64Mi
+    volumes:
+    - emptyDir: {}
+      name: postgresql-data
