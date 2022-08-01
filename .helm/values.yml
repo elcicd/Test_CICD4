@@ -88,6 +88,8 @@ elCicdChart:
     
   - templateName: deploymentService
     appName: postgresql
+    anyProfiles:
+    - dev
     image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql
     imagePullPolicy: IfNotPresent
     port: 5432
@@ -95,6 +97,7 @@ elCicdChart:
     restartPolicy: Always
     schedulerName: default-scheduler
     terminationGracePeriodSeconds: 30
+    imagePullSecrets: []
     env:
     - name: POSTGRESQL_USER
       valueFrom:
