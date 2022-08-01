@@ -1,9 +1,6 @@
-apiVersion: apps.openshift.io/v1
-kind: DeploymentConfig
+apiVersion: v1
+kind: Deployment
 metadata:
-  annotations:
-    template.alpha.openshift.io/wait-for-ready: "true"
-  creationTimestamp: null
   generation: 1
   labels:
     app: postgresql-ephemeral
@@ -19,12 +16,9 @@ spec:
     recreateParams:
       timeoutSeconds: 600
     resources: {}
-    type: Recreate
+    type: RollingUpdate
   template:
     metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewApp
-      creationTimestamp: null
       labels:
         app: postgresql-ephemeral
         name: postgresql
@@ -94,5 +88,3 @@ spec:
       volumes:
       - emptyDir: {}
         name: postgresql-data
-  test: false
-  triggers: []
