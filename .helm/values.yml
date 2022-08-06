@@ -1,14 +1,20 @@
 elCicdChart:
   parameters:
     INSTANCE_1: instance1
-    INSTANCE_2: instance2
+    APP_NAME_1: ${MICROSERVICE_NAME}-${INSTANCE_1}
+    APP_NAME_2: ${MICROSERVICE_NAME}-instance2
+    CONFIG_MAP: configmap
     CPU_UTILIZATION: 90
     MIN_REPLICAS: 1
     MAX_REPLICAS: 3
     TOPIC: topic
-    TOPIC_NAME: topicname
     CGROUP: cgroup
-    INSTANCE_2_PORT: 8082
+    TOPIC_NAME: topicname
+    CGROUP_KEY: valueFrom
+    CGROUP_VALUE:
+      configMapKeyRef:
+        key: ${CGROUP}
+        name: ${APP_NAME}-${CONFIG_MAP}
     ENV_DEF:
     - name: ${APP_NAME}-${TOPIC_NAME}
       value: ${APP_NAME}-${TOPIC}
@@ -21,19 +27,13 @@ elCicdChart:
       valueFrom:
         configMapKeyRef:
           key: ${TOPIC_NAME}
-          name: ${APP_NAME}-configmap
+          name: ${APP_NAME}-${CONFIG_MAP}
     - name: ${CGROUP}
-      ${CGROUP_VALUE_DEF_KEY}: ${CGROUP_VALUE_DEF}
-    CGROUP_VALUE_DEF_KEY: valueFrom
-    CGROUP_VALUE_DEF:
-      configMapKeyRef:
-        key: ${CGROUP}
-        name: ${APP_NAME}-configmap
-    DATA_MAP:
-      ${CGROUP}: ${CGROUP}
-      ${TOPIC_NAME}: ${SDLC_ENV}-${APP_NAME}-${TOPIC}
-      ${TEST_KEY}: ${TEST_VALUE}
-    
+      ${CGROUP_KEY}: ${CGROUP_VALUE}
+
+  parameters-${APP_NAME_2}:
+    INSTANCE_2_PORT: 8082
+  
   parameters-dev:
     CPU_UTILIZATION: 150
     MAX_REPLICAS: 2
@@ -44,21 +44,23 @@ elCicdChart:
 
   templates:
   - templateName: deploymentService
-    appName: ${MICROSERVICE_NAME}-${INSTANCE_1}
+    appNames:
+    - ${APP_NAME_1}
+    - ${APP_NAME_2}
+    port: ${INSTANCE_2_PORT}
     env: ${ENV_DEF}
-    parameters-dev:
-      CGROUP_VALUE_DEF_KEY: value
-      CGROUP_VALUE_DEF: patch-test-${SDLC_ENV}-${INSTANCE_1}
-
-  - templateName: configMap
-    appName: ${MICROSERVICE_NAME}-${INSTANCE_1}-configmap
-    data: ${DATA_MAP}
+    parameters-${APP_NAME_1}-dev:
+      CGROUP_KEY: value
+      CGROUP_VALUE: patch-test-${SDLC_ENV}-${INSTANCE_1}
 
   - templateName: ingress
-    appName: ${MICROSERVICE_NAME}-${INSTANCE_1}
+    appNames:
+      - ${APP_NAME_1}
+      - ${APP_NAME_2}
+    port: ${INSTANCE_2_PORT}
 
   - templateName: horizontalPodAutoscaler
-    appName: ${MICROSERVICE_NAME}-${INSTANCE_1}
+    appName: ${APP_NAME_1}
     maxReplicas: ${MAX_REPLICAS}
     minReplicas: ${MIN_REPLICAS}
     metrics:
@@ -68,21 +70,17 @@ elCicdChart:
         type: Utilization
         averageUtilization: ${CPU_UTILIZATION}
 
-  - templateName: deploymentService
-    appName: ${MICROSERVICE_NAME}-${INSTANCE_2}
-    env: ${ENV_DEF}
-    port: ${INSTANCE_2_PORT}
-
   - templateName: configMap
-    appName: ${MICROSERVICE_NAME}-${INSTANCE_2}-configmap
-    parameters-dev:
+    appNames:
+    - ${APP_NAME_1}-${CONFIG_MAP}
+    - ${APP_NAME_2}-${CONFIG_MAP}
+    data:
+      ${CGROUP}: ${CGROUP}
+      ${TOPIC_NAME}: ${SDLC_ENV}-${APP_NAME}-${TOPIC}
+      ${TEST_KEY}: ${TEST_VALUE}
+    parameters-${APP_NAME_2}-${CONFIG_MAP}-dev:
       TEST_KEY: my-test-key
       TEST_VALUE: just-for-this-map
-    data: ${DATA_MAP}
-
-  - templateName: ingress
-    appName: ${MICROSERVICE_NAME}-${INSTANCE_2}
-    port: ${INSTANCE_2_PORT}
     
   - templateName: deploymentService
     appName: postgresql
