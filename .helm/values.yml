@@ -55,8 +55,8 @@ elCicdChart:
 
   - templateName: ingress
     appNames:
-      - ${APP_NAME_1}
-      - ${APP_NAME_2}
+    - ${APP_NAME_1}
+    - ${APP_NAME_2}
     port: ${INSTANCE_2_PORT}
 
   - templateName: horizontalPodAutoscaler
