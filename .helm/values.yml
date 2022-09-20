@@ -74,10 +74,10 @@ elCicdChart:
       TEST_VALUE: just-for-the-${APP_NAME_2}-map
     
   - templateName: deploymentService
-    appName: quay.io/enterprisedb/postgresql
+    appName: postgresql
     anyProfiles:
     - dev
-    image: postgres
+    image: quay.io/enterprisedb/postgresql
     imagePullPolicy: IfNotPresent
     port: 5432
     dnsPolicy: ClusterFirst
@@ -96,7 +96,7 @@ elCicdChart:
         secretKeyRef:
           key: database-password
           name: postgresql
-    - name: POSTGRES_DB
+    - name: POSTGRESQL_DB
       valueFrom:
         secretKeyRef:
           key: database-name
