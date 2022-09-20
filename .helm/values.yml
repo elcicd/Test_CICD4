@@ -57,7 +57,7 @@ elCicdChart:
     elcicdDefs-${APP_NAME_2}:
       MAX_REPLICAS: 7
     metrics:
-    - type: Resource
+    - type: resource
       name: cpu
       target:
         type: Utilization
