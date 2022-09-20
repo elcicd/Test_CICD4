@@ -74,7 +74,7 @@ elCicdChart:
       TEST_VALUE: just-for-the-${APP_NAME_2}-map
     
   - templateName: deploymentService
-    appName: postgresql
+    appName: quay.io/enterprisedb/postgresql
     anyProfiles:
     - dev
     image: postgres
@@ -96,7 +96,7 @@ elCicdChart:
         secretKeyRef:
           key: database-password
           name: postgresql
-    - name: POSTGRESQL_DB
+    - name: POSTGRES_DB
       valueFrom:
         secretKeyRef:
           key: database-name
