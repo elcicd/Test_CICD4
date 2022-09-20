@@ -77,26 +77,25 @@ elCicdChart:
     appName: postgresql
     anyProfiles:
     - dev
-    image: quay.io/enterprisedb/postgresql
+    image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql
     imagePullPolicy: IfNotPresent
     port: 5432
     dnsPolicy: ClusterFirst
     restartPolicy: Always
     schedulerName: default-scheduler
     terminationGracePeriodSeconds: 30
-    imagePullSecrets: []
     env:
-    - name: POSTGRES_PASSWORD
+    - name: POSTGRESQL_USER
       valueFrom:
         secretKeyRef:
           key: database-user
           name: postgresql
-    - name: POSTGRES_PASSWORD
+    - name: POSTGRESQL_PASSWORD
       valueFrom:
         secretKeyRef:
           key: database-password
           name: postgresql
-    - name: POSTGRESQL_DB
+    - name: POSTGRESQL_DATABASE
       valueFrom:
         secretKeyRef:
           key: database-name
