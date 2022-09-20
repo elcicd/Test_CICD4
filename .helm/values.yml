@@ -86,12 +86,12 @@ elCicdChart:
     terminationGracePeriodSeconds: 30
     imagePullSecrets: []
     env:
-    - name: POSTGRESQL_USER
+    - name: POSTGRES_PASSWORD
       valueFrom:
         secretKeyRef:
           key: database-user
           name: postgresql
-    - name: POSTGRESQL_PASSWORD
+    - name: POSTGRES_PASSWORD
       valueFrom:
         secretKeyRef:
           key: database-password
