@@ -77,7 +77,7 @@ elCicdChart:
     appName: postgresql
     anyProfiles:
     - dev
-    image: postgresql
+    image: postgres
     imagePullPolicy: IfNotPresent
     port: 5432
     dnsPolicy: ClusterFirst
