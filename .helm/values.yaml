@@ -1,5 +1,5 @@
 elCicdChart:
-  elcicdDefs:
+  elCicdDefs:
     INSTANCE_1: instance1
     APP_NAME_1: ${MICROSERVICE_NAME}-${INSTANCE_1}
     APP_NAME_2: ${MICROSERVICE_NAME}-instance2
@@ -31,18 +31,19 @@ elCicdChart:
     - name: ${CGROUP}
       ${CGROUP_KEY}: ${CGROUP_VALUE}
 
-  elcicdDefs-${APP_NAME_2}:
+  elCicdDefs-${APP_NAME_2}:
     INSTANCE_2_PORT: 8082
   
-  elcicdDefs-dev:
+  elCicdDefs-dev:
     CPU_UTILIZATION: 150
 
   templates:
   - templateName: deploymentServiceIngress
+    namespaces: ${NAME_SPACES}
     appNames: ${APP_NAMES}
     port: ${INSTANCE_2_PORT}
     env: ${ENV_DEF}
-    elcicdDefs-${APP_NAME_1}-dev:
+    elCicdDefs-${APP_NAME_1}-dev:
       CGROUP_KEY: value
       CGROUP_VALUE: patch-test-${SDLC_ENV}-${INSTANCE_1}
 
@@ -50,11 +51,11 @@ elCicdChart:
     appNames: ${APP_NAMES}
     maxReplicas: ${MAX_REPLICAS}
     minReplicas: ${MIN_REPLICAS}
-    elcicdDefs-${APP_NAME_1}:
+    elCicdDefs-${APP_NAME_1}:
       MAX_REPLICAS: 3
-    elcicdDefs-${APP_NAME_1}-prod:
+    elCicdDefs-${APP_NAME_1}-prod:
       MAX_REPLICAS: 5
-    elcicdDefs-${APP_NAME_2}:
+    elCicdDefs-${APP_NAME_2}:
       MAX_REPLICAS: 7
     metrics:
     - type: resource
@@ -69,7 +70,7 @@ elCicdChart:
       ${CGROUP}: ${CGROUP}
       ${TOPIC_NAME}: ${SDLC_ENV}-${APP_NAME}-${TOPIC}
       ${TEST_KEY}: ${TEST_VALUE}
-    elcicdDefs-${APP_NAME_2}-dev:
+    elCicdDefs-${APP_NAME_2}-dev:
       TEST_KEY: my-test-key
       TEST_VALUE: just-for-the-${APP_NAME_2}-map
     
