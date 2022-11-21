@@ -1,135 +1,127 @@
-elCicdChart:
-  elCicdDefs:
-    INSTANCE_1: instance1
-    APP_NAME_1: ${MICROSERVICE_NAME}-${INSTANCE_1}
-    APP_NAME_2: ${MICROSERVICE_NAME}-instance2
-    APP_NAMES:
-    - ${APP_NAME_1}
-    - ${APP_NAME_2}
-    CPU_UTILIZATION: 90
-    TOPIC: topic
-    CGROUP: cgroup
-    TOPIC_NAME: topicname
-    CGROUP_KEY: valueFrom
-    CGROUP_VALUE:
+elCicdDefs:
+  INSTANCE_1: instance1
+  APP_NAME_1: ${COMPONENT_NAME}-${INSTANCE_1}
+  APP_NAME_2: ${COMPONENT_NAME}-instance2
+  APP_NAMES:
+  - ${APP_NAME_1}
+  - ${APP_NAME_2}
+  CPU_UTILIZATION: 90
+  TOPIC: topic
+  CGROUP: cgroup
+  TOPIC_NAME: topicname
+  CGROUP_KEY: valueFrom
+  CGROUP_VALUE:
+    configMapKeyRef:
+      key: ${CGROUP}
+      name: ${APP_NAME}
+  ENV_DEF:
+  - name: ${APP_NAME}-${TOPIC_NAME}
+    value: ${APP_NAME}-${TOPIC}
+  - name: password
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: ${COMPONENT_NAME}-sealed-secret
+  - name: ${TOPIC_NAME}
+    valueFrom:
       configMapKeyRef:
-        key: ${CGROUP}
+        key: ${TOPIC_NAME}
         name: ${APP_NAME}
-    ENV_DEF:
-    - name: ${APP_NAME}-${TOPIC_NAME}
-      value: ${APP_NAME}-${TOPIC}
-    - name: password
-      valueFrom:
-        secretKeyRef:
-          key: password
-          name: ${MICROSERVICE_NAME}-sealed-secret
-    - name: ${TOPIC_NAME}
-      valueFrom:
-        configMapKeyRef:
-          key: ${TOPIC_NAME}
-          name: ${APP_NAME}
-    - name: ${CGROUP}
-      ${CGROUP_KEY}: ${CGROUP_VALUE}
+  - name: ${CGROUP}
+    ${CGROUP_KEY}: ${CGROUP_VALUE}
 
+elCicdDefs-${APP_NAME_2}:
+  INSTANCE_2_PORT: 8082
+
+elCicdDefs-dev:
+  CPU_UTILIZATION: 150
+
+elCicdTemplates:
+- templateName: deploymentServiceIngress
+  appNames: ${APP_NAMES}
+  port: ${INSTANCE_2_PORT}
+  env: ${ENV_DEF}
+  elCicdDefs-${APP_NAME_1}-dev:
+    CGROUP_KEY: value
+    CGROUP_VALUE: patch-test-${SDLC_ENV}-${INSTANCE_1}
+
+- templateName: horizontalPodAutoscaler
+  appNames: ${APP_NAMES}
+  maxReplicas: ${MAX_REPLICAS}
+  minReplicas: ${MIN_REPLICAS}
+  elCicdDefs-${APP_NAME_1}:
+    MAX_REPLICAS: 3
+  elCicdDefs-${APP_NAME_1}-prod:
+    MAX_REPLICAS: 5
   elCicdDefs-${APP_NAME_2}:
-    INSTANCE_2_PORT: 8082
+    MAX_REPLICAS: 7
+  metrics:
+  - type: resource
+    name: cpu
+    target:
+      type: Utilization
+      averageUtilization: ${CPU_UTILIZATION}
+
+- templateName: configMap
+  appNames: ${APP_NAMES}
+  data:
+    ${CGROUP}: ${CGROUP}
+    ${TOPIC_NAME}: ${SDLC_ENV}-${APP_NAME}-${TOPIC}
+    ${TEST_KEY}: ${TEST_VALUE}
+  elCicdDefs-${APP_NAME_2}-dev:
+    TEST_KEY: my-test-key
+    TEST_VALUE: just-for-the-${APP_NAME_2}-map
   
-  elCicdDefs-dev:
-    CPU_UTILIZATION: 150
-
-  templates:
-  - templateName: deploymentServiceIngress
-    namespaces: ${NAME_SPACES}
-    appNames: ${APP_NAMES}
-    port: ${INSTANCE_2_PORT}
-    env: ${ENV_DEF}
-    elCicdDefs-${APP_NAME_1}-dev:
-      CGROUP_KEY: value
-      CGROUP_VALUE: patch-test-${SDLC_ENV}-${INSTANCE_1}
-
-  - templateName: horizontalPodAutoscaler
-    appNames: ${APP_NAMES}
-    maxReplicas: ${MAX_REPLICAS}
-    minReplicas: ${MIN_REPLICAS}
-    elCicdDefs-${APP_NAME_1}:
-      MAX_REPLICAS: 3
-    elCicdDefs-${APP_NAME_1}-prod:
-      MAX_REPLICAS: 5
-    elCicdDefs-${APP_NAME_2}:
-      MAX_REPLICAS: 7
-    metrics:
-    - type: resource
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: ${CPU_UTILIZATION}
-
-  - templateName: configMap
-    appNames: ${APP_NAMES}
-    data:
-      ${CGROUP}: ${CGROUP}
-      ${TOPIC_NAME}: ${SDLC_ENV}-${APP_NAME}-${TOPIC}
-      ${TEST_KEY}: ${TEST_VALUE}
-    elCicdDefs-${APP_NAME_2}-dev:
-      TEST_KEY: my-test-key
-      TEST_VALUE: just-for-the-${APP_NAME_2}-map
-    
-  - templateName: deploymentService
-    appName: postgresql
-    anyProfiles:
-    - dev
-    image: quay.io/centos7/postgresql-13-centos7
-    imagePullPolicy: IfNotPresent
-    port: 5432
-    dnsPolicy: ClusterFirst
-    restartPolicy: Always
-    schedulerName: default-scheduler
-    terminationGracePeriodSeconds: 30
-    imagePullSecrets: []
-    env:
-    - name: POSTGRESQL_USER
-      valueFrom:
-        secretKeyRef:
-          key: database-user
-          name: postgresql
-    - name: POSTGRESQL_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          key: database-password
-          name: postgresql
-    - name: POSTGRESQL_DATABASE
-      valueFrom:
-        secretKeyRef:
-          key: database-name
-          name: postgresql
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /var/lib/pgsql/data
-      name: postgresql-data
-    livenessProbe:
-      exec:
-        command:
-        - /usr/libexec/check-container
-        - --live
-      failureThreshold: 3
-      initialDelaySeconds: 120
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 10
-    readinessProbe:
-      exec:
-        command:
-        - /usr/libexec/check-container
-      failureThreshold: 3
-      initialDelaySeconds: 15
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 1
-    limitsCpu: 400m
-    limitsMemory: 512Mi
-    requestsCpu: 100m
-    requestsMemory: 64Mi
-    volumes:
-    - emptyDir: {}
-      name: postgresql-data
+- templateName: deploymentService
+  appName: postgresql
+  anyProfiles:
+  - dev
+  image: quay.io/centos7/postgresql-13-centos7
+  imagePullPolicy: IfNotPresent
+  port: 5432
+  env:
+  - name: POSTGRESQL_USER
+    valueFrom:
+      secretKeyRef:
+        key: database-user
+        name: postgresql
+  - name: POSTGRESQL_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        key: database-password
+        name: postgresql
+  - name: POSTGRESQL_DATABASE
+    valueFrom:
+      secretKeyRef:
+        key: database-name
+        name: postgresql
+  terminationMessagePath: /dev/termination-log
+  volumeMounts:
+  - mountPath: /var/lib/pgsql/data
+    name: postgresql-data
+  livenessProbe:
+    exec:
+      command:
+      - /usr/libexec/check-container
+      - --live
+    failureThreshold: 3
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 10
+  readinessProbe:
+    exec:
+      command:
+      - /usr/libexec/check-container
+    failureThreshold: 3
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  limitsCpu: 400m
+  limitsMemory: 512Mi
+  requestsCpu: 100m
+  requestsMemory: 64Mi
+  volumes:
+  - emptyDir: {}
+    name: postgresql-data
