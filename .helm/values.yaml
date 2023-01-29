@@ -118,9 +118,7 @@ elCicdTemplates:
     periodSeconds: 10
     successThreshold: 1
     timeoutSeconds: 1
-  limitsCpu: 400m
   limitsMemory: 512Mi
-  requestsCpu: 100m
   requestsMemory: 64Mi
   volumes:
   - emptyDir: {}
