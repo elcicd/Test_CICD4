@@ -1,10 +1,10 @@
 elCicdDefs:
   INSTANCE_1: instance1
-  APP_NAME_1: ${COMPONENT_NAME}-${INSTANCE_1}
-  APP_NAME_2: ${COMPONENT_NAME}-instance2
-  APP_NAMES:
-  - ${APP_NAME_1}
-  - ${APP_NAME_2}
+  OBJ_NAME_1: ${COMPONENT_NAME}-${INSTANCE_1}
+  OBJ_NAME_2: ${COMPONENT_NAME}-instance2
+  OBJ_NAMES:
+  - ${OBJ_NAME_1}
+  - ${OBJ_NAME_2}
   CPU_UTILIZATION: 90
   TOPIC: topic
   CGROUP: cgroup
@@ -13,10 +13,10 @@ elCicdDefs:
   CGROUP_VALUE:
     configMapKeyRef:
       key: ${CGROUP}
-      name: ${APP_NAME}
+      name: ${OBJ_NAME}
   ENV_DEF:
-  - name: ${APP_NAME}-${TOPIC_NAME}
-    value: ${APP_NAME}-${TOPIC}
+  - name: ${OBJ_NAME}-${TOPIC_NAME}
+    value: ${OBJ_NAME}-${TOPIC}
   - name: password
     valueFrom:
       secretKeyRef:
@@ -26,11 +26,11 @@ elCicdDefs:
     valueFrom:
       configMapKeyRef:
         key: ${TOPIC_NAME}
-        name: ${APP_NAME}
+        name: ${OBJ_NAME}
   - name: ${CGROUP}
     ${CGROUP_KEY}: ${CGROUP_VALUE}
 
-elCicdDefs-${APP_NAME_2}:
+elCicdDefs-${OBJ_NAME_2}:
   INSTANCE_2_PORT: 8082
 
 elCicdDefs-dev:
@@ -38,22 +38,22 @@ elCicdDefs-dev:
 
 elCicdTemplates:
 - templateName: deploymentServiceIngress
-  appNames: ${APP_NAMES}
+  objNames: ${OBJ_NAMES}
   port: ${INSTANCE_2_PORT}
   env: ${ENV_DEF}
-  elCicdDefs-${APP_NAME_1}-dev:
+  elCicdDefs-${OBJ_NAME_1}-dev:
     CGROUP_KEY: value
     CGROUP_VALUE: patch-test-${SDLC_ENV}-${INSTANCE_1}
 
 - templateName: horizontalPodAutoscaler
-  appNames: ${APP_NAMES}
+  objNames: ${OBJ_NAMES}
   maxReplicas: ${MAX_REPLICAS}
   minReplicas: ${MIN_REPLICAS}
-  elCicdDefs-${APP_NAME_1}:
+  elCicdDefs-${OBJ_NAME_1}:
     MAX_REPLICAS: 3
-  elCicdDefs-${APP_NAME_1}-prod:
+  elCicdDefs-${OBJ_NAME_1}-prod:
     MAX_REPLICAS: 5
-  elCicdDefs-${APP_NAME_2}:
+  elCicdDefs-${OBJ_NAME_2}:
     MAX_REPLICAS: 7
   metrics:
   - type: resource
@@ -63,17 +63,17 @@ elCicdTemplates:
       averageUtilization: ${CPU_UTILIZATION}
 
 - templateName: configMap
-  appNames: ${APP_NAMES}
+  objNames: ${OBJ_NAMES}
   data:
     ${CGROUP}: ${CGROUP}
-    ${TOPIC_NAME}: ${SDLC_ENV}-${APP_NAME}-${TOPIC}
+    ${TOPIC_NAME}: ${SDLC_ENV}-${OBJ_NAME}-${TOPIC}
     ${TEST_KEY}: ${TEST_VALUE}
-  elCicdDefs-${APP_NAME_2}-dev:
+  elCicdDefs-${OBJ_NAME_2}-dev:
     TEST_KEY: my-test-key
-    TEST_VALUE: just-for-the-${APP_NAME_2}-map
+    TEST_VALUE: just-for-the-${OBJ_NAME_2}-map
   
 - templateName: deploymentService
-  appName: postgresql
+  objName: postgresql
   mustHaveAnyProfile:
   - dev
   image: quay.io/centos7/postgresql-13-centos7
