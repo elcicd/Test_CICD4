@@ -16,7 +16,7 @@ def main():
     )
 
     while True:
-        print("foo : demo")
+        print("first commit : demo")
         print("hostname : %s" % os.uname()[1])
         print("cgroup value : %s" % os.environ.get('cgroup'))
         print("topicname value : %s" % os.environ.get('topicname'))
