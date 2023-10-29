@@ -1,10 +1,10 @@
 elCicdDefs:
   INSTANCE_1: instance1
-  OBJ_NAME_1: ${COMPONENT_NAME}-${INSTANCE_1}
-  OBJ_NAME_2: ${COMPONENT_NAME}-instance2
+  OBJ_NAME_1: $<COMPONENT_NAME>-$<INSTANCE_1>
+  OBJ_NAME_2: $<COMPONENT_NAME>-instance2
   OBJ_NAMES:
-  - ${OBJ_NAME_1}
-  - ${OBJ_NAME_2}
+  - $<OBJ_NAME_1>
+  - $<OBJ_NAME_2>
   CPU_UTILIZATION: 90
   TOPIC: topic
   CGROUP: cgroup
@@ -12,25 +12,25 @@ elCicdDefs:
   CGROUP_KEY: valueFrom
   CGROUP_VALUE:
     configMapKeyRef:
-      key: ${CGROUP}
-      name: ${OBJ_NAME}
+      key: $<CGROUP>
+      name: $<OBJ_NAME>
   ENV_DEF:
-  - name: ${OBJ_NAME}-${TOPIC_NAME}
-    value: ${OBJ_NAME}-${TOPIC}
+  - name: $<OBJ_NAME>-$<TOPIC_NAME>
+    value: $<OBJ_NAME>-$<TOPIC>
   - name: password
     valueFrom:
       secretKeyRef:
         key: password
-        name: ${COMPONENT_NAME}-sealed-secret
-  - name: ${TOPIC_NAME}
+        name: $<COMPONENT_NAME>-sealed-secret
+  - name: $<TOPIC_NAME>
     valueFrom:
       configMapKeyRef:
-        key: ${TOPIC_NAME}
-        name: ${OBJ_NAME}
-  - name: ${CGROUP}
-    ${CGROUP_KEY}: ${CGROUP_VALUE}
+        key: $<TOPIC_NAME>
+        name: $<OBJ_NAME>
+  - name: $<CGROUP>
+    $<CGROUP_KEY>: $<CGROUP_VALUE>
 
-elCicdDefs-${OBJ_NAME_2}:
+elCicdDefs-$<OBJ_NAME_2>:
   INSTANCE_2_PORT: 8082
 
 elCicdDefs-dev:
@@ -38,39 +38,39 @@ elCicdDefs-dev:
 
 elCicdTemplates:
 - templateName: deploymentServiceIngress
-  objNames: ${OBJ_NAMES}
-  port: ${INSTANCE_2_PORT}
-  env: ${ENV_DEF}
-  elCicdDefs-${OBJ_NAME_1}-dev:
+  objNames: $<OBJ_NAMES>
+  port: $<INSTANCE_2_PORT>
+  env: $<ENV_DEF>
+  elCicdDefs-$<OBJ_NAME_1>-dev:
     CGROUP_KEY: value
-    CGROUP_VALUE: patch-test-${SDLC_ENV}-${INSTANCE_1}
+    CGROUP_VALUE: patch-test-$<SDLC_ENV>-$<INSTANCE_1>
 
 - templateName: horizontalPodAutoscaler
-  objNames: ${OBJ_NAMES}
-  maxReplicas: ${MAX_REPLICAS}
-  minReplicas: ${MIN_REPLICAS}
-  elCicdDefs-${OBJ_NAME_1}:
+  objNames: $<OBJ_NAMES>
+  maxReplicas: $<MAX_REPLICAS>
+  minReplicas: $<MIN_REPLICAS>
+  elCicdDefs-$<OBJ_NAME_1>:
     MAX_REPLICAS: 3
-  elCicdDefs-${OBJ_NAME_1}-prod:
+  elCicdDefs-$<OBJ_NAME_1>-prod:
     MAX_REPLICAS: 5
-  elCicdDefs-${OBJ_NAME_2}:
+  elCicdDefs-$<OBJ_NAME_2>:
     MAX_REPLICAS: 7
   metrics:
   - type: resource
     name: cpu
     target:
       type: Utilization
-      averageUtilization: ${CPU_UTILIZATION}
+      averageUtilization: $<CPU_UTILIZATION>
 
 - templateName: configMap
-  objNames: ${OBJ_NAMES}
+  objNames: $<OBJ_NAMES>
   data:
-    ${CGROUP}: ${CGROUP}
-    ${TOPIC_NAME}: ${SDLC_ENV}-${OBJ_NAME}-${TOPIC}
-    ${TEST_KEY}: ${TEST_VALUE}
-  elCicdDefs-${OBJ_NAME_2}-dev:
+    $<CGROUP>: $<CGROUP>
+    $<TOPIC_NAME>: $<SDLC_ENV>-$<OBJ_NAME>-$<TOPIC>
+    $<TEST_KEY>: $<TEST_VALUE>
+  elCicdDefs-$<OBJ_NAME_2>-dev:
     TEST_KEY: my-test-key
-    TEST_VALUE: just-for-the-${OBJ_NAME_2}-map
+    TEST_VALUE: just-for-the-$<OBJ_NAME_2>-map
   
 - templateName: deploymentService
   objName: postgresql
