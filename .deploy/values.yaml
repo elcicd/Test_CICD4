@@ -37,7 +37,7 @@ elCicdDefs-dev:
   CPU_UTILIZATION: 150
 
 elCicdTemplates:
-- templateName: deploymentServiceIngress
+- templateName: deployment|service|ingress
   objNames: $<OBJ_NAMES>
   port: $<INSTANCE_2_PORT>
   env: $<ENV_DEF>
@@ -72,7 +72,7 @@ elCicdTemplates:
     TEST_KEY: my-test-key
     TEST_VALUE: just-for-the-$<OBJ_NAME_2>-map
   
-- templateName: deploymentService
+- templateName: deployment|service
   objName: postgresql
   mustHaveAnyProfile:
   - dev
