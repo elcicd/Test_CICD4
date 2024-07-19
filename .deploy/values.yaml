@@ -37,7 +37,10 @@ elCicdDefs-dev:
   CPU_UTILIZATION: 150
 
 elCicdTemplates:
-- templateName: deployment|service|ingress
+- templateNames:
+  - deployment
+  - service
+  - ingress
   objNames: $<OBJ_NAMES>
   port: $<INSTANCE_2_PORT>
   env: $<ENV_DEF>
