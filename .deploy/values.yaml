@@ -33,7 +33,7 @@ elCicdDefs:
 elCicdDefs-$<OBJ_NAME_2>:
   INSTANCE_2_PORT: 8082
 
-elCicdDefs-dev:
+elCicdDefs-DEV:
   CPU_UTILIZATION: 150
 
 elCicdTemplates:
@@ -44,7 +44,7 @@ elCicdTemplates:
   objNames: $<OBJ_NAMES>
   port: $<INSTANCE_2_PORT>
   env: $<ENV_DEF>
-  elCicdDefs-$<OBJ_NAME_1>-dev:
+  elCicdDefs-$<OBJ_NAME_1>-DEV:
     CGROUP_KEY: value
     CGROUP_VALUE: patch-test-$<SDLC_ENV>-$<INSTANCE_1>
 
@@ -54,7 +54,7 @@ elCicdTemplates:
   minReplicas: $<MIN_REPLICAS>
   elCicdDefs-$<OBJ_NAME_1>:
     MAX_REPLICAS: 3
-  elCicdDefs-$<OBJ_NAME_1>-prod:
+  elCicdDefs-$<OBJ_NAME_1>-PROD:
     MAX_REPLICAS: 5
   elCicdDefs-$<OBJ_NAME_2>:
     MAX_REPLICAS: 7
@@ -71,14 +71,14 @@ elCicdTemplates:
     $<CGROUP>: $<CGROUP>
     $<TOPIC_NAME>: $<SDLC_ENV>-$<OBJ_NAME>-$<TOPIC>
     $<TEST_KEY>: $<TEST_VALUE>
-  elCicdDefs-$<OBJ_NAME_2>-dev:
+  elCicdDefs-$<OBJ_NAME_2>-DEV:
     TEST_KEY: my-test-key
     TEST_VALUE: just-for-the-$<OBJ_NAME_2>-map
   
 - templateName: deployment|service
   objName: postgresql
   mustHaveAnyProfile:
-  - dev
+  - DEV
   image: quay.io/fedora/postgresql-16:16
   imagePullPolicy: IfNotPresent
   port: 5432
