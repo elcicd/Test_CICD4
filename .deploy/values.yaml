@@ -56,11 +56,12 @@ elCicdTemplates:
   elCicdDefs-$<OBJ_NAME_2>:
     MAX_REPLICAS: 7
   metrics:
-  - type: resource
-    name: cpu
-    target:
-      type: Utilization
-      averageUtilization: $<CPU_UTILIZATION>
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: $<CPU_UTILIZATION>
 
 - templateName: configMap
   objNames: $<OBJ_NAMES>
